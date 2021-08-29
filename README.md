@@ -19,5 +19,3 @@ Then:
 ```
 > npm start
 ```
-
-and a page will open to read the qr code in your browser, after reading the qr code from whatsapp, the process is complete, now all you have to do is keep the app open.
