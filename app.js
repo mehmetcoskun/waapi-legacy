@@ -1,9 +1,10 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const fs = require('fs');
-const open = require('open');
 const CSVToJSON = require('csvtojson');
 const cron = require('node-cron');
+const qrcode = require('qrcode-terminal');
+const readline = require('readline');
 const { Client } = require('whatsapp-web.js');
 const app = express();
 
@@ -34,36 +35,6 @@ global.client = new Client({
 });
 
 global.authed = false;
-
-app.get('/auth', (req, res) => {
-    var qrjs = fs.readFileSync('./qrcode.js');
-
-    fs.readFile('./last.qr', (err, last_qr) => {
-        fs.readFile('session.json', async (serr, sessiondata) => {
-            if (err && sessiondata) {
-                res.write(
-                    '<html><body><h2>Already Authenticated</h2></body></html>'
-                );
-                res.end();
-            } else if (!err && serr) {
-                var page = `
-                    <html>
-                        <body>
-                            <script>${qrjs}</script>
-                            <div id="qrcode"></div>
-                            <h2>if whatsapp does not accept please refresh the page for new qr code</h2>
-                            <script type="text/javascript">
-                                new QRCode(document.getElementById("qrcode"), "${last_qr}");
-                            </script>
-                        </body>
-                    </html>
-                `;
-                res.write(page);
-                res.end();
-            }
-        });
-    });
-});
 
 client.on('qr', (qr) => {
     fs.writeFileSync('./last.qr', qr);
@@ -149,18 +120,32 @@ client.on('ready', () => {
 
 client.initialize();
 
+const createQR = (qr) => {
+    qrcode.generate(qr, { small: true }, function (qrcode) {
+        console.log(qrcode);
+        console.log('=============================================');
+        console.log('Please scan the following QR code on whatsapp.');
+        console.log('Press the "r" to new QR Code.');
+    });
+};
+
 const port = process.env.PORT || 4000;
 app.listen(port, () => {
     console.log('Configuring server, Please wait...');
 
-    fs.readFile('./last.qr', (err) => {
+    fs.readFile('./last.qr', (err, last_qr) => {
         fs.readFile('session.json', async (serr) => {
             if (!err && serr) {
-                await open(`http://localhost:${port}/auth`);
-
-                console.log(
-                    `if the qr code page does not open please go to this address: http://localhost:${port}/auth`
-                );
+                createQR(last_qr.toString());
+                readline.emitKeypressEvents(process.stdin);
+                process.stdin.setRawMode(true);
+                process.stdin.on('keypress', (str, key) => {
+                    if (key.ctrl && key.name === 'c') {
+                        process.exit();
+                    } else if (key.name === 'r') {
+                        createQR(last_qr.toString());
+                    }
+                });
             }
         });
     });
