@@ -1,0 +1,28 @@
+{
+  "name": "waapi",
+  "version": "1.0.0",
+  "description": "You can schedule your Whatsapp messages and send them whenever you want.",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "start:dev": "nodemon app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "waapi"
+  ],
+  "author": "Mehmet Coşkun",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "csvtojson": "^2.0.10",
+    "express": "^4.17.1",
+    "fs": "0.0.1-security",
+    "node-cron": "^3.0.0",
+    "open": "^8.2.1",
+    "whatsapp-web.js": "^1.14.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.12"
+  }
+}

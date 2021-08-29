@@ -1,0 +1,7 @@
+{
+    "timezone": "Europe/Istanbul",
+    "messages": {
+        "at_9am": "Günaydın",
+        "at_night": "Numaram değişti, yeni numaram +x (xxx) xxx xxxx"
+    }
+}
